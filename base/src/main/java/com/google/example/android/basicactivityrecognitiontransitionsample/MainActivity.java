@@ -118,7 +118,9 @@ public class MainActivity extends AppCompatActivity {
 
 
         // TODO: Create a BroadcastReceiver to listen for activity transitions.
-
+        // The receiver listens for the PendingIntent above that is triggered by the system when an
+        // activity transition occurs.
+        mTransitionsReceiver = new TransitionsReceiver();
 
         printToScreen("App initialized.");
     }
@@ -128,7 +130,7 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
 
         // TODO: Register the BroadcastReceiver to listen for activity transitions.
-
+        registerReceiver(mTransitionsReceiver, new IntentFilter(TRANSITIONS_RECEIVER_ACTION));
     }
 
     @Override
@@ -145,7 +147,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
 
         // TODO: Unregister activity transition receiver when user leaves the app.
-
+        unregisterReceiver(mTransitionsReceiver);
         super.onStop();
     }
 
@@ -208,7 +210,21 @@ public class MainActivity extends AppCompatActivity {
     public void onClickEnableOrDisableActivityRecognition(View view) {
 
         // TODO: Enable/Disable activity tracking and ask for permissions if needed.
+        if (activityRecognitionPermissionApproved()) {
 
+            if (activityTrackingEnabled) {
+                disableActivityTransitions();
+
+            } else {
+                enableActivityTransitions();
+            }
+
+        } else {
+            // Request permission and start activity for result. If the permission is approved, we
+            // want to make sure we start activity recognition tracking.
+            Intent startIntent = new Intent(this, PermissionRationalActivity.class);
+            startActivityForResult(startIntent, 0);
+        }
     }
 
     private void printToScreen(@NonNull String message) {
