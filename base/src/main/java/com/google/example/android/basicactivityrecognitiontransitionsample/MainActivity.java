@@ -309,6 +309,19 @@ public class MainActivity extends AppCompatActivity {
             }
 
             // TODO: Extract activity transition information from listener.
+            if (ActivityTransitionResult.hasResult(intent)) {
+
+                ActivityTransitionResult result = ActivityTransitionResult.extractResult(intent);
+
+                for (ActivityTransitionEvent event : result.getTransitionEvents()) {
+
+                    String info = "Transition: " + toActivityString(event.getActivityType()) +
+                            " (" + toTransitionType(event.getTransitionType()) + ")" + "   " +
+                            new SimpleDateFormat("HH:mm:ss", Locale.US).format(new Date());
+
+                    printToScreen(info);
+                }
+            }
 
         }
     }
